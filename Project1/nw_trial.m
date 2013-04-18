@@ -1,5 +1,5 @@
-function [ term, next_step, new_weight ] = se_trial( cur_step, next, w )
-%Generate a trial distribution favoring SE paths for
+function [ term, next_step, new_weight ] = nw_trial( cur_step, next, w )
+%Generate a trial distribution favoring NW paths for
 %sequential monte-carlo SAW
 
 STOP_PCT = 5;
@@ -7,7 +7,7 @@ STOP_PCT = 5;
 s_next = size(next);
 P = zeros(s_next(1)+1,1)';
 for i = 1:s_next(1)
-    if sum(next(i,:) - cur_step) > 0
+    if sum(next(i,:) - cur_step) < 0
         P(i) = 1.5;
     else
         P(i) = 1;
