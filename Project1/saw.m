@@ -1,4 +1,4 @@
-function [K_DIST, MAX_GRID] = saw(N, m, trial)
+function [K_DIST, MAX_GRID] = saw(N, m, trial, MM, WORKERS)
 %SAW self-avoiding walk estimation with square
 %grid of size N
 %trial - function with parameters
@@ -9,7 +9,6 @@ function [K_DIST, MAX_GRID] = saw(N, m, trial)
 
 %k_dist = zeros(m, 3);
 
-WORKERS = 2;
 sub_m = round(m/WORKERS);
 
 spmd (WORKERS)
@@ -20,10 +19,16 @@ spmd (WORKERS)
         if mod(i, 10^4) == 0
             disp(['lab', num2str(labindex), ' sample ', num2str(i),'/',num2str(sub_m)]);
         end
-        [grid, route_len, w] = gen_route(N, trial);
-        assert(route_len == round(route_len))
+        [grid, route_len, w] = gen_route(N, trial, MM);
+        %assert(route_len == round(route_len))
         %route_len
         %w
+        
+        if MM == 1 && grid(N+1, N+1) ~= 1
+            route_len = -1;
+            w = -1;
+        end
+        
         k_dist(i,:) = [route_len, w];
         %assert(route_len == sum(grid(:)));
         if route_len > max_len
@@ -33,6 +38,11 @@ spmd (WORKERS)
         %grid
     end
     %k_dist
+    
+    if MM == 1
+        k_dist = k_dist(k_dist >= 0);
+        k_dist = reshape(k_dist, length(k_dist)/2, 2);
+    end
 end
 
 K_DIST = zeros(sub_m*WORKERS, 2);
@@ -55,7 +65,7 @@ end
 
 end
 
-function [grid, route_len, w] = gen_route(N, trial)
+function [grid, route_len, w] = gen_route(N, trial, MM)
 %generate a SAW with route 'route' and weight 'w'
 %under trial distribution 'trial'
 
@@ -103,6 +113,10 @@ while term == 0
         ri = ri + 1;
         grid(x,y) = 1;
         route(ri,:) = next_step;
+      
+        if MM == 1 && x == N+1 && y == N+1
+           term = 1;
+        end
     end
     
 end

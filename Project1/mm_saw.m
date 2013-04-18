@@ -1,4 +1,4 @@
-function [K_DIST, MAX_GRID] = saw(N, m, trial, MM)
+function [K_DIST, MAX_GRID] = saw(N, m, trial)
 %SAW self-avoiding walk estimation with square
 %grid of size N
 %trial - function with parameters
@@ -21,15 +21,9 @@ spmd (WORKERS)
             disp(['lab', num2str(labindex), ' sample ', num2str(i),'/',num2str(sub_m)]);
         end
         [grid, route_len, w] = gen_route(N, trial);
-        %assert(route_len == round(route_len))
+        assert(route_len == round(route_len))
         %route_len
         %w
-        
-        if MM == 1 && grid(N+1, N+1) != 1
-            route_len = -1;
-            w = -1;
-        end
-        
         k_dist(i,:) = [route_len, w];
         %assert(route_len == sum(grid(:)));
         if route_len > max_len
@@ -39,10 +33,6 @@ spmd (WORKERS)
         %grid
     end
     %k_dist
-    
-    if MM == 1
-        k_dist = k_dist(k_dist >= 0);
-        
 end
 
 K_DIST = zeros(sub_m*WORKERS, 2);
@@ -104,21 +94,15 @@ while term == 0
        [term, next_step, w] = trial(route(ri,:), next, w);
     end
     
-    %x = route(end,1);
-    %y = route(end, 2);
+    x = next_step(1);
+    y = next_step(2);
+    ri = ri + 1;
+    grid(x,y) = 1;
+    route(ri,:) = next_step;
     
-    if term == 0
-        x = next_step(1);
-        y = next_step(2);
-        ri = ri + 1;
-        grid(x,y) = 1;
-        route(ri,:) = next_step;
-      
-        if MM == 1 && x == N+1 && y == N+1
-           term = 1;
-        end
+    if x == N+1 && y == N+1
+        term = 1;
     end
-    
 end
 route_len = ri;
 %assert(route_len == sum(grid(:)));
