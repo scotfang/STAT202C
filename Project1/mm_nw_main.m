@@ -1,11 +1,11 @@
 N = 10
-m_start = 10^3;
-m_end = 10^4;
+m_start = 10^5;
+m_end = 10^6;
 m_points = 3
 MM = 1
 WORKERS = 2
-th = @(route,next,w) mm_uniform_trial(route,next,w);
-trial_str = 'mm_uniform'
+th = @(route,next,w) mm_nw_trial(route,next,w);
+trial_str = 'mm_nw'
 
 m_step = round((m_end-m_start)/m_points);
 M_TARGET = m_start:m_step:m_end;

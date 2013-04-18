@@ -17,7 +17,7 @@ spmd (WORKERS)
     max_len = 0;
     for i=1:sub_m
         if mod(i, 10^4) == 0
-            disp(['lab', num2str(labindex), ' sample ', num2str(i),'/',num2str(sub_m)]);
+            disp(['lab', num2str(labindex), ' sample pct ', num2str(100*i/sub_m)]);
         end
         [grid, route_len, w] = gen_route(N, trial, MM);
         %assert(route_len == round(route_len))
@@ -45,13 +45,14 @@ spmd (WORKERS)
     end
 end
 
-K_DIST = zeros(sub_m*WORKERS, 2);
+%K_DIST = zeros(sub_m*WORKERS, 2);
+K_DIST = [];
 MAX_LEN = 0;
 MAX_GRID = [];
 for w = 1:WORKERS
     r_start = (w-1)*sub_m + 1;
     r_end = r_start + sub_m - 1;
-    K_DIST(r_start:r_end,:) = k_dist{w};
+    K_DIST = [K_DIST; k_dist{w}];
   
     if max_len{w} > MAX_LEN
        MAX_GRID = max_grid{w}; 

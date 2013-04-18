@@ -4,7 +4,7 @@ function [ term, next_step, new_weight ] = few_stop_trial( cur_step, next, w )
 
 s_next = size(next);
 
-STOP_PCT = 5;
+STOP_PCT = 8;
 %2 percent stop probability
 if randi(100) <= STOP_PCT
     term = 1;

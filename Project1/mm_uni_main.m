@@ -1,6 +1,6 @@
 N = 10
-m_start = 10^3;
-m_end = 10^4;
+m_start = 10^5;
+m_end = 10^6;
 m_points = 3
 MM = 1
 WORKERS = 2
